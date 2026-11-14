@@ -15,6 +15,10 @@ function GithubMark({ className }: { className?: string }) {
 }
 
 /** Sticky top bar: brand, section anchors, language + theme toggles. */
+
+const anchorClass =
+  'hidden rounded-md px-2.5 py-1.5 text-sm text-muted-foreground web:transition-colors web:hover:text-foreground md:inline-block';
+
 export function Nav() {
   const { lang, setLang, t } = useI18n();
   const { colorScheme, toggleColorScheme } = useUnikitTheme();
@@ -32,29 +36,23 @@ export function Nav() {
           </Badge>
         </a>
         <nav className="flex items-center gap-1">
-          <a
-            href="#demo"
-            className="hidden rounded-md px-2.5 py-1.5 text-sm text-muted-foreground web:transition-colors web:hover:text-foreground md:inline-block"
-          >
+          <a href="#usage" className={anchorClass}>
+            {t.nav.usage}
+          </a>
+          <a href="#demo" className={anchorClass}>
             {t.nav.demo}
           </a>
-          <a
-            href="#hosts"
-            className="hidden rounded-md px-2.5 py-1.5 text-sm text-muted-foreground web:transition-colors web:hover:text-foreground md:inline-block"
-          >
+          <a href="#hosts" className={anchorClass}>
             {t.nav.hosts}
           </a>
-          <a
-            href="#benchmarks"
-            className="hidden rounded-md px-2.5 py-1.5 text-sm text-muted-foreground web:transition-colors web:hover:text-foreground md:inline-block"
-          >
+          <a href="#benchmarks" className={anchorClass}>
             {t.nav.bench}
           </a>
           <a
             href={DOCS_URL}
             target="_blank"
             rel="noreferrer"
-            className="hidden rounded-md px-2.5 py-1.5 text-sm text-muted-foreground web:transition-colors web:hover:text-foreground md:inline-block"
+            className={anchorClass}
           >
             {t.nav.docs}
           </a>

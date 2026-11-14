@@ -4,6 +4,7 @@ import { Check, Copy } from 'lucide-react';
 import { Button, cn } from '@unikit-bridge/ui';
 
 import { useI18n } from '../i18n';
+import { ScrollHint } from './ScrollHint';
 
 type CodeBlockProps = {
   code: string;
@@ -50,17 +51,11 @@ export function CodeBlock({ code, title, className }: CodeBlockProps) {
           {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
         </Button>
       </div>
-      <div className="relative">
+      <ScrollHint>
         <pre className="web:overflow-x-auto p-4 font-mono text-[13px] leading-relaxed text-foreground">
           <code>{code}</code>
         </pre>
-        {/* Touch scrollbars are invisible until dragged — hint that long
-            lines continue on narrow screens (hidden where lines fit). */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-r from-transparent to-muted/60 sm:hidden"
-        />
-      </div>
+      </ScrollHint>
     </div>
   );
 }

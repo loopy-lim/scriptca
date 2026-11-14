@@ -4,6 +4,7 @@ import { Hero } from './components/Hero';
 import { HostMatrix } from './components/HostMatrix';
 import { LiveDemo } from './components/LiveDemo';
 import { Nav } from './components/Nav';
+import { Usage } from './components/Usage';
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
+        <Usage />
         <LiveDemo />
         <HostMatrix />
         <Benchmarks />

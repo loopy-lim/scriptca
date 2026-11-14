@@ -77,14 +77,6 @@ export function Benchmarks() {
           <p className="mt-2.5 text-sm font-medium leading-relaxed text-foreground">
             {t.bench.calloutBody}
           </p>
-          <ul className="mt-3 grid gap-2 text-xs leading-relaxed text-muted-foreground">
-            {t.bench.calloutPoints.map((pt) => (
-              <li key={pt} className="flex items-start gap-2">
-                <span className="mt-1.5 size-1 shrink-0 rounded-full bg-foreground/60" />
-                <span>{pt}</span>
-              </li>
-            ))}
-          </ul>
         </aside>
       </div>
     </Section>

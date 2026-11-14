@@ -6,6 +6,7 @@ import { Badge, cn } from '@unikit-bridge/ui';
 import { useI18n } from '../i18n';
 import { GITHUB_URL } from '../site';
 import { CodeBlock } from './CodeBlock';
+import { ScrollHint } from './ScrollHint';
 
 function TargetRouter() {
   const { t } = useI18n();
@@ -32,9 +33,11 @@ function TargetRouter() {
               {t.hero.router.sourceFile}
             </span>
           </div>
-          <p className="mt-1.5 overflow-x-auto font-mono text-xs text-foreground whitespace-nowrap">
-            {t.hero.router.sourceCode}
-          </p>
+          <ScrollHint>
+            <p className="mt-1.5 overflow-x-auto font-mono text-xs text-foreground whitespace-nowrap">
+              {t.hero.router.sourceCode}
+            </p>
+          </ScrollHint>
         </div>
 
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 px-1 font-mono text-[11px] text-muted-foreground">
@@ -95,7 +98,6 @@ function TargetRouter() {
                 {t.hero.router.wiringLabel}
               </p>
               <p className="mt-0.5 text-foreground">{active.wiring}</p>
-              <p className="mt-1 text-muted-foreground">{active.note}</p>
             </div>
           </div>
         </div>
@@ -104,9 +106,11 @@ function TargetRouter() {
           <p className="font-mono text-[11px] text-muted-foreground">
             {t.hero.router.callSiteLabel}
           </p>
-          <pre className="mt-1.5 overflow-x-auto font-mono text-xs leading-relaxed text-foreground">
-            <code>{t.hero.router.callSiteCode}</code>
-          </pre>
+          <ScrollHint>
+            <pre className="mt-1.5 overflow-x-auto font-mono text-xs leading-relaxed text-foreground">
+              <code>{t.hero.router.callSiteCode}</code>
+            </pre>
+          </ScrollHint>
         </div>
       </div>
     </div>

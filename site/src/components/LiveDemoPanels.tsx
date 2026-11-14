@@ -11,6 +11,7 @@ import { ImagePanel } from '../demo/panels/ImagePanel';
 import { MandelbrotPanel } from '../demo/panels/MandelbrotPanel';
 import { RepeatPanel } from '../demo/panels/RepeatPanel';
 import type { DemoTabKey } from '../demo/types';
+import { ScrollHint } from './ScrollHint';
 
 /**
  * The tabbed demo panels — the React.lazy chunk that pulls in the compiled
@@ -42,9 +43,11 @@ export default function DemoPanels() {
           <span className="font-mono text-xs text-foreground">{activeMeta.label}</span>
           <span className="font-mono text-[11px] text-muted-foreground">{activeMeta.abi}</span>
         </div>
-        <pre className="overflow-x-auto p-4 font-mono text-xs leading-relaxed text-foreground">
-          <code>{activeMeta.code}</code>
-        </pre>
+        <ScrollHint>
+          <pre className="overflow-x-auto p-4 font-mono text-xs leading-relaxed text-foreground">
+            <code>{activeMeta.code}</code>
+          </pre>
+        </ScrollHint>
         <div className="border-t border-border px-3.5 py-2.5">
           <p className="font-mono text-[11px] leading-relaxed text-muted-foreground">
             {t.demo.importNote}
