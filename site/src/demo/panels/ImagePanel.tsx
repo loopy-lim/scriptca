@@ -122,6 +122,7 @@ export function ImagePanel() {
                 key={key}
                 variant={filter === key ? 'default' : 'outline'}
                 size="sm"
+                aria-pressed={filter === key}
                 onPress={() => setFilter(key)}
               >
                 {t.demo.tabs.image.filterLabels[key]}

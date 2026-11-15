@@ -17,6 +17,10 @@ export const jsFib = (n: number): number => {
   return a;
 };
 
+const fibStep = (k: number): number => (k < 2 ? k : fibStep(k - 1) + fibStep(k - 2));
+
+export const jsFibTree = (n: number): number => fibStep(Math.min(34, Math.max(2, n | 0)));
+
 export const jsRepeat = (text: string, times: number): string => {
   const parts: string[] = [];
   for (let i = 0; i < times; i++) parts.push(text);

@@ -25,6 +25,20 @@ export function fib(n: number): number {
   return a;
 }
 
+/**
+ * Recursive fibonacci — call-frame-dominated work. V8 compiles the plain
+ * loop above to near-native speed, but every recursive call keeps its cost,
+ * so this is the shape where the compiled core pulls ahead in the browser.
+ * Clamped to n ≤ 34 so a single call stays in the tens of milliseconds.
+ */
+export function fibTree(n: number): number {
+  return fibStep(Math.min(34, Math.max(2, n | 0)));
+}
+
+function fibStep(k: number): number {
+  return k < 2 ? k : fibStep(k - 1) + fibStep(k - 2);
+}
+
 /** Joins `times` copies of `text` — a string round-trip over the boundary. */
 export function repeat(text: string, times: number): string {
   const parts: string[] = [];

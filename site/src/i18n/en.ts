@@ -103,8 +103,8 @@ add(20, 22); // 42`,
     stepsNote: 'Bundler-less hosts (Bun, Node, Deno, Workers) need only createClient().',
     goodTitle: 'Put in the core',
     goodItems: [
-      'Number loops — pixels, simulations, deep iteration',
-      'Image and large-buffer work (one Uint8Array handoff)',
+      'Call-heavy recursion and search — tree walks, backtracking',
+      'Image and large-buffer work on native hosts (one Uint8Array handoff)',
       'CPU-bound parsing and encoding',
       'Logic that needs memory isolation',
     ],
@@ -188,18 +188,17 @@ sumRange(n);`,
       },
       fib: {
         label: 'fib',
-        desc: 'Iterative fibonacci.',
-        abi: '(f64) → f64',
-        code: `export function fib(n: number): number {
-  let a = 0, b = 1;
-  for (let i = 0; i < n; i++) {
-    const next = a + b;
-    a = b;
-    b = next;
-  }
-  return a;
-}`,
+        desc: 'V8 compiles the loop to near-native speed; recursion keeps its call cost, and WASM pulls ahead.',
+        abi: '(f64) → f64 · fib vs fibTree',
+        code: `// loop — V8 compiles this to near-native speed
+export function fib(n: number): number
+
+// recursion — call frames dominate, WASM wins
+export function fibTree(n: number): number`,
+        modeLabel: 'implementation',
+        modeLabels: { iter: 'loop', tree: 'recursive' },
         n: 'n (10–78)',
+        nTree: 'n (24–34)',
       },
       bytes: {
         label: 'sumBytes',
@@ -284,7 +283,8 @@ sumRange(n);`,
       { op: 'many small strings', cost: '≈ 2× slower', note: 'batch or keep in TS' },
     ],
     calloutTitle: 'In short',
-    calloutBody: 'Compiled cores win when each call carries real work.',
+    calloutBody:
+      'V8 compiles even plain loops to near-native speed — WASM leads on call-heavy code like recursion and search.',
   },
   footer: {
     tagline: 'One TypeScript core, every runtime.',

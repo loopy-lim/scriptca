@@ -106,8 +106,8 @@ add(20, 22); // 42`,
     stepsNote: '번들러 없는 호스트(Bun·Node·Deno·Workers)는 createClient() 하나면 충분합니다.',
     goodTitle: '코어에 넣기 좋은 작업',
     goodItems: [
-      '수치 루프 — 픽셀·시뮬레이션 같은 반복 계산',
-      '이미지·큰 버퍼 처리 (Uint8Array를 한 번에 넘기기)',
+      '재귀·탐색 등 호출이 많은 계산 — 트리 순회, 백트래킹',
+      '네이티브 실행의 이미지·큰 버퍼 처리 (Uint8Array를 한 번에 넘기기)',
       '파싱·인코딩 등 CPU 집약 작업',
       '메모리 격리가 필요한 로직',
     ],
@@ -191,18 +191,17 @@ sumRange(n);`,
       },
       fib: {
         label: 'fib',
-        desc: '반복 피보나치.',
-        abi: '(f64) → f64',
-        code: `export function fib(n: number): number {
-  let a = 0, b = 1;
-  for (let i = 0; i < n; i++) {
-    const next = a + b;
-    a = b;
-    b = next;
-  }
-  return a;
-}`,
+        desc: '반복문은 V8이 네이티브급으로 컴파일하지만, 재귀는 호출 비용이 남아 wasm이 앞섭니다.',
+        abi: '(f64) → f64 · fib vs fibTree',
+        code: `// 반복 — V8도 네이티브급
+export function fib(n: number): number
+
+// 재귀 — 호출 프레임이 지배, wasm 승
+export function fibTree(n: number): number`,
+        modeLabel: '구현',
+        modeLabels: { iter: '반복', tree: '재귀' },
         n: 'n (10–78)',
+        nTree: 'n (24–34)',
       },
       bytes: {
         label: 'sumBytes',
@@ -287,7 +286,8 @@ sumRange(n);`,
       { op: '작은 string 다발', cost: '≈ 2× 지연', note: '묶거나 TS에 두기' },
     ],
     calloutTitle: '한 줄 요약',
-    calloutBody: '호출 한 번에 할 일이 많을수록 컴파일된 코어가 유리합니다.',
+    calloutBody:
+      '브라우저의 V8은 단순 루프도 네이티브급으로 컴파일합니다 — wasm이 앞서는 건 재귀·탐색 같은 호출 많은 코드입니다.',
   },
   footer: {
     tagline: '하나의 TypeScript 코어, 모든 런타임.',
