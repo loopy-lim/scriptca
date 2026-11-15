@@ -11,6 +11,7 @@ import { ImagePanel } from '../demo/panels/ImagePanel';
 import { MandelbrotPanel } from '../demo/panels/MandelbrotPanel';
 import { RepeatPanel } from '../demo/panels/RepeatPanel';
 import type { DemoTabKey } from '../demo/types';
+import { highlightCode } from '../highlight';
 import { ScrollHint } from './ScrollHint';
 
 /**
@@ -45,7 +46,7 @@ export default function DemoPanels() {
         </div>
         <ScrollHint>
           <pre className="overflow-x-auto p-4 font-mono text-xs leading-relaxed text-foreground">
-            <code>{activeMeta.code}</code>
+            <code dangerouslySetInnerHTML={{ __html: highlightCode(activeMeta.code, 'ts') }} />
           </pre>
         </ScrollHint>
         <div className="border-t border-border px-3.5 py-2.5">

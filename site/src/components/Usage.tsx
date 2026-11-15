@@ -1,5 +1,6 @@
 import { ArrowRight, Check, X } from 'lucide-react';
 
+import { highlightCode } from '../highlight';
 import { useI18n } from '../i18n';
 import { ScrollHint } from './ScrollHint';
 import { Section } from './Section';
@@ -19,9 +20,10 @@ export function Usage() {
             <h3 className="mt-2 text-sm font-semibold tracking-tight">{step.title}</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{step.body}</p>
             <ScrollHint className="mt-auto pt-3">
-              <code className="block overflow-x-auto rounded-md border border-border bg-muted/40 px-2.5 py-2 font-mono text-xs whitespace-nowrap">
-                {step.code}
-              </code>
+              <code
+                className="block overflow-x-auto rounded-md border border-border bg-muted/40 px-2.5 py-2 font-mono text-xs whitespace-nowrap"
+                dangerouslySetInnerHTML={{ __html: highlightCode(step.code, step.lang) }}
+              />
             </ScrollHint>
           </li>
         ))}

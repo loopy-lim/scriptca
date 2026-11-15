@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight } from 'lucide-react';
 
 import { Badge, cn } from '@unikit-bridge/ui';
 
+import { highlightCode } from '../highlight';
 import { useI18n } from '../i18n';
 import { GITHUB_URL } from '../site';
 import { CodeBlock } from './CodeBlock';
@@ -10,6 +11,7 @@ import { ScrollHint } from './ScrollHint';
 
 function TargetRouter() {
   const { t } = useI18n();
+  const { sourceCode, callSiteCode } = t.hero.router;
   const [selectedId, setSelectedId] = useState(t.hero.router.targets[0].id);
   const active =
     t.hero.router.targets.find((item) => item.id === selectedId) ?? t.hero.router.targets[0];
@@ -35,7 +37,7 @@ function TargetRouter() {
           </div>
           <ScrollHint>
             <p className="mt-1.5 overflow-x-auto font-mono text-xs text-foreground whitespace-nowrap">
-              {t.hero.router.sourceCode}
+              <code dangerouslySetInnerHTML={{ __html: highlightCode(sourceCode, 'ts') }} />
             </p>
           </ScrollHint>
         </div>
@@ -108,7 +110,9 @@ function TargetRouter() {
           </p>
           <ScrollHint>
             <pre className="mt-1.5 overflow-x-auto font-mono text-xs leading-relaxed text-foreground">
-              <code>{t.hero.router.callSiteCode}</code>
+              <code
+                dangerouslySetInnerHTML={{ __html: highlightCode(callSiteCode, 'ts') }}
+              />
             </pre>
           </ScrollHint>
         </div>

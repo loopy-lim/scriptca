@@ -3,17 +3,19 @@ import { Check, Copy } from 'lucide-react';
 
 import { Button, cn } from '@unikit-bridge/ui';
 
+import { highlightCode } from '../highlight';
 import { useI18n } from '../i18n';
 import { ScrollHint } from './ScrollHint';
 
 type CodeBlockProps = {
   code: string;
   title?: string;
+  lang?: string;
   className?: string;
 };
 
 /** Terminal-style code panel with a working copy button (clipboard + fallback). */
-export function CodeBlock({ code, title, className }: CodeBlockProps) {
+export function CodeBlock({ code, title, lang = 'bash', className }: CodeBlockProps) {
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
@@ -53,7 +55,7 @@ export function CodeBlock({ code, title, className }: CodeBlockProps) {
       </div>
       <ScrollHint>
         <pre className="web:overflow-x-auto p-4 font-mono text-[13px] leading-relaxed text-foreground">
-          <code>{code}</code>
+          <code dangerouslySetInnerHTML={{ __html: highlightCode(code, lang) }} />
         </pre>
       </ScrollHint>
     </div>

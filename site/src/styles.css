@@ -110,3 +110,49 @@
     background-size: 22px 22px;
   }
 }
+
+/* Syntax tokens (highlight.js) — GitHub-derived hues tuned to sit quietly on
+   the zinc palette. Code stays the only colored element on the page; unknown
+   tokens inherit the surrounding foreground. */
+:root {
+  --syn-keyword: hsl(6 74% 42%);
+  --syn-string: hsl(212 72% 34%);
+  --syn-number: hsl(212 82% 38%);
+  --syn-function: hsl(262 70% 44%);
+  --syn-type: hsl(188 60% 28%);
+}
+
+.dark {
+  --syn-keyword: hsl(6 100% 72%);
+  --syn-string: hsl(209 100% 78%);
+  --syn-number: hsl(209 100% 74%);
+  --syn-function: hsl(257 88% 78%);
+  --syn-type: hsl(187 65% 65%);
+}
+
+.hljs-comment {
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+.hljs-meta,
+.hljs-punctuation {
+  color: var(--muted-foreground);
+}
+.hljs-keyword {
+  color: var(--syn-keyword);
+}
+.hljs-string {
+  color: var(--syn-string);
+}
+.hljs-number,
+.hljs-literal {
+  color: var(--syn-number);
+}
+.hljs-title,
+.hljs-function {
+  color: var(--syn-function);
+}
+.hljs-built_in,
+.hljs-type {
+  color: var(--syn-type);
+}
