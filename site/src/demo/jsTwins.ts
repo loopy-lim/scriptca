@@ -39,6 +39,21 @@ export const jsSumRange = (count: number): number => {
   return sum;
 };
 
+export const jsPipelineStats = (data: Uint8Array): number => {
+  const n = data.length;
+  const xs = new Float64Array(n);
+  for (let i = 0; i < n; i++) xs[i] = data[i] / 255;
+  const dx = new Float64Array(n);
+  for (let i = 1; i < n; i++) dx[i] = xs[i] - xs[i - 1];
+  let s = 0;
+  const sm = new Float64Array(n);
+  for (let i = 1; i < n - 1; i++) {
+    sm[i] = (xs[i - 1] + 2 * xs[i] + xs[i + 1]) / 4;
+    s += sm[i] * sm[i] + dx[i] * dx[i];
+  }
+  return s;
+};
+
 export const jsGrayscaleRgba = (data: Uint8Array): Uint8Array => {
   for (let i = 0; i < data.length; i += 4) {
     const y = (data[i] * 77 + data[i + 1] * 150 + data[i + 2] * 29) >> 8;

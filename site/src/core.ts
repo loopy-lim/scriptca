@@ -69,6 +69,28 @@ export function sumRange(count: number): number {
   return sum;
 }
 
+/**
+ * Multi-pass signal pipeline: normalize → diff → smooth, allocating a fresh
+ * intermediate Float64Array per pass. In plain JS every pass is a heap
+ * allocation with zero-init and GC pressure; in the compiled core it is a
+ * linear-memory malloc with no GC — the allocation-churn shape where the
+ * core pulls clearly ahead of V8.
+ */
+export function pipelineStats(data: Uint8Array): number {
+  const n = data.length;
+  const xs = new Float64Array(n);
+  for (let i = 0; i < n; i++) xs[i] = data[i] / 255;
+  const dx = new Float64Array(n);
+  for (let i = 1; i < n; i++) dx[i] = xs[i] - xs[i - 1];
+  let s = 0;
+  const sm = new Float64Array(n);
+  for (let i = 1; i < n - 1; i++) {
+    sm[i] = (xs[i - 1] + 2 * xs[i] + xs[i + 1]) / 4;
+    s += sm[i] * sm[i] + dx[i] * dx[i];
+  }
+  return s;
+}
+
 /** BT.601 luma grayscale — mutates RGBA in place, one buffer round-trip. */
 export function grayscaleRgba(data: Uint8Array): Uint8Array {
   for (let i = 0; i < data.length; i += 4) {

@@ -9,22 +9,22 @@ import { CoarsePanel } from '../demo/panels/CoarsePanel';
 import { FibPanel } from '../demo/panels/FibPanel';
 import { ImagePanel } from '../demo/panels/ImagePanel';
 import { MandelbrotPanel } from '../demo/panels/MandelbrotPanel';
+import { PipelinePanel } from '../demo/panels/PipelinePanel';
 import { RepeatPanel } from '../demo/panels/RepeatPanel';
-import type { DemoTabKey } from '../demo/types';
+import { DEMO_TABS, type DemoTabKey } from '../demo/types';
 import { highlightCode } from '../highlight';
 import { ScrollHint } from './ScrollHint';
 
 /**
  * The tabbed demo panels — the React.lazy chunk that pulls in the compiled
- * core. Compute-heavy kernels come first (where WASM wins big), honest
- * boundary-cost baselines last. Panel implementations live in src/demo/.
+ * core. Compute-heavy kernels first, honest boundary-cost baselines last.
+ * Panel implementations live in src/demo/.
  */
-
-const TAB_ORDER: DemoTabKey[] = ['mandelbrot', 'image', 'coarse', 'fib', 'bytes', 'add', 'repeat'];
 
 const PANELS: Record<DemoTabKey, () => React.JSX.Element> = {
   mandelbrot: MandelbrotPanel,
   image: ImagePanel,
+  pipeline: PipelinePanel,
   coarse: CoarsePanel,
   fib: FibPanel,
   bytes: BytesPanel,
@@ -59,13 +59,13 @@ export default function DemoPanels() {
       <div className="min-w-0 lg:col-span-7">
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as DemoTabKey)}>
           <TabsList className="max-w-full overflow-x-auto">
-            {TAB_ORDER.map((key) => (
+            {DEMO_TABS.map((key) => (
               <TabsTrigger key={key} value={key}>
                 {t.demo.tabs[key].label}
               </TabsTrigger>
             ))}
           </TabsList>
-          {TAB_ORDER.map((key) => {
+          {DEMO_TABS.map((key) => {
             const Panel = PANELS[key];
             return (
               <TabsContent key={key} value={key} className="mt-5">

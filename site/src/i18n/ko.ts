@@ -107,8 +107,8 @@ add(20, 22); // 42`,
     goodTitle: '코어에 넣기 좋은 작업',
     goodItems: [
       '재귀·탐색 등 호출이 많은 계산 — 트리 순회, 백트래킹',
+      '패스마다 버퍼를 새로 만드는 파이프라인·시뮬레이션',
       '네이티브 실행의 이미지·큰 버퍼 처리 (Uint8Array를 한 번에 넘기기)',
-      '파싱·인코딩 등 CPU 집약 작업',
       '메모리 격리가 필요한 로직',
     ],
     badTitle: 'TS에 남겨두세요',
@@ -170,6 +170,15 @@ sobelRgba(rgba, w, h)`,
         },
         before: '입력',
         after: '출력',
+      },
+      pipeline: {
+        label: 'pipeline',
+        desc: '패스마다 새 Float64Array를 만드는 3-패스 파이프라인 — JS의 힙 할당·GC 비용이 사라집니다.',
+        abi: '(bytes) → f64 · 3 fresh buffers',
+        code: `const xs = new Float64Array(n)  // normalize
+const dx = new Float64Array(n)  // diff
+const sm = new Float64Array(n)  // smooth`,
+        size: '크기 (64–2048 KB)',
       },
       coarse: {
         label: 'sumRange',
@@ -287,7 +296,7 @@ export function fibTree(n: number): number`,
     ],
     calloutTitle: '한 줄 요약',
     calloutBody:
-      '브라우저의 V8은 단순 루프도 네이티브급으로 컴파일합니다 — wasm이 앞서는 건 재귀·탐색 같은 호출 많은 코드입니다.',
+      '브라우저의 V8은 단순 루프도 네이티브급으로 컴파일합니다 — wasm이 앞서는 건 호출 많은 재귀·탐색과 할당 잦은 파이프라인입니다.',
   },
   footer: {
     tagline: '하나의 TypeScript 코어, 모든 런타임.',

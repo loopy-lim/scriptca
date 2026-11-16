@@ -104,8 +104,8 @@ add(20, 22); // 42`,
     goodTitle: 'Put in the core',
     goodItems: [
       'Call-heavy recursion and search — tree walks, backtracking',
+      'Pipelines and simulations that build fresh buffers per pass',
       'Image and large-buffer work on native hosts (one Uint8Array handoff)',
-      'CPU-bound parsing and encoding',
       'Logic that needs memory isolation',
     ],
     badTitle: 'Keep in TypeScript',
@@ -167,6 +167,15 @@ sobelRgba(rgba, w, h)`,
         },
         before: 'input',
         after: 'output',
+      },
+      pipeline: {
+        label: 'pipeline',
+        desc: 'A 3-pass pipeline allocating a fresh Float64Array per pass — no JS heap allocation or GC cost.',
+        abi: '(bytes) → f64 · 3 fresh buffers',
+        code: `const xs = new Float64Array(n)  // normalize
+const dx = new Float64Array(n)  // diff
+const sm = new Float64Array(n)  // smooth`,
+        size: 'size (64–2048 KB)',
       },
       coarse: {
         label: 'sumRange',
@@ -284,7 +293,7 @@ export function fibTree(n: number): number`,
     ],
     calloutTitle: 'In short',
     calloutBody:
-      'V8 compiles even plain loops to near-native speed — WASM leads on call-heavy code like recursion and search.',
+      'V8 compiles even plain loops to near-native speed — WASM leads on call-heavy code (recursion, search) and allocation-heavy pipelines.',
   },
   footer: {
     tagline: 'One TypeScript core, every runtime.',

@@ -11,6 +11,7 @@ import {
 } from '@unikit-bridge/ui';
 
 import { useI18n } from '../i18n';
+import { DEMO_TABS } from '../demo/types';
 import { Section } from './Section';
 
 // The demo panels import the compiled core (WASM top-level await at module
@@ -96,7 +97,7 @@ export function LiveDemo() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <CardTitle className="font-mono text-base">{t.demo.sourceTitle}</CardTitle>
             <CardDescription className="font-mono text-xs">
-              mandelbrot · image · sumRange · fib · sumBytes · add · repeat
+              {DEMO_TABS.map((key) => t.demo.tabs[key].label).join(' · ')}
             </CardDescription>
           </div>
         </CardHeader>
