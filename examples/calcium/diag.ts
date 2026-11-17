@@ -1,0 +1,36 @@
+import { createTwin } from './twin.ts';
+const { createClient } = await import('./.scriptca/generated/node.js');
+const c: any = await createClient();
+const enc = (s: string) => new TextEncoder().encode(s);
+const old = JSON.parse(await Bun.file('/tmp/c14calcium/.golden.json').text());
+c.wbInit(10, 10);
+const A = (r: number) => (r - 1) * 10, B = (r: number) => (r - 1) * 10 + 1, C = (r: number) => (r - 1) * 10 + 2, D = (r: number) => (r - 1) * 10 + 3;
+for (let i = 1; i <= 5; i++) c.wbSetNumber(A(i), i);
+c.wbSetFormula(A(6), enc('=SUM(A1:A5)'));
+c.wbSetFormula(A(7), enc('=AVERAGE(A1:A5)'));
+c.wbSetFormula(A(8), enc('=IF(A6>10, A6*2, A6/3)'));
+c.wbSetFormula(B(1), enc('=ROUND(3.14159, 2)')); c.wbSetFormula(B(2), enc('=SQRT(16)')); c.wbSetFormula(B(3), enc('=10/4'));
+c.wbSetFormula(B(4), enc('=MOD(10,3)')); c.wbSetFormula(B(5), enc('=2^10')); c.wbSetFormula(B(6), enc('=-3.5')); c.wbSetFormula(B(7), enc('=IFERROR(1/0, -99)'));
+c.wbSetFormula(C(1), enc('=C2')); c.wbSetFormula(C(2), enc('=C1')); c.wbSetFormula(C(3), enc('=MAX(A1:A5)*10 - MIN(A1:A5)/2'));
+c.wbSetFormula(C(4), enc('=COUNT(A1:A8)')); c.wbSetFormula(C(5), enc('=SIGN(0-5)')); c.wbSetFormula(C(6), enc('=FLOOR(3.7)'));
+c.wbSetFormula(C(7), enc('=CEIL(3.2)')); c.wbSetFormula(C(8), enc('=POWER(2,8)'));
+c.wbSetFormula(D(1), enc('=J9+5')); c.wbSetFormula(D(2), enc('=A1:A5')); c.wbSetFormula(D(3), enc('=SUM(A1'));
+c.wbRecalc();
+const js = createTwin();
+js.wbInit(10, 10);
+for (let i = 1; i <= 5; i++) js.wbSetNumber(A(i), i);
+const f = (i: number, s: string) => js.wbSetFormula(i, enc(s));
+f(A(6), '=SUM(A1:A5)'); f(A(7), '=AVERAGE(A1:A5)'); f(A(8), '=IF(A6>10, A6*2, A6/3)');
+f(B(1), '=ROUND(3.14159, 2)'); f(B(2), '=SQRT(16)'); f(B(3), '=10/4'); f(B(4), '=MOD(10,3)');
+f(B(5), '=2^10'); f(B(6), '=-3.5'); f(B(7), '=IFERROR(1/0, -99)');
+f(C(1), '=C2'); f(C(2), '=C1'); f(C(3), '=MAX(A1:A5)*10 - MIN(A1:A5)/2'); f(C(4), '=COUNT(A1:A8)');
+f(C(5), '=SIGN(0-5)'); f(C(6), '=FLOOR(3.7)'); f(C(7), '=CEIL(3.2)'); f(C(8), '=POWER(2,8)');
+f(D(1), '=J9+5'); f(D(2), '=A1:A5'); f(D(3), '=SUM(A1');
+js.wbRecalc();
+const name = (i: number) => String.fromCharCode(65 + (i % 10)) + (Math.floor(i / 10) + 1);
+for (let i = 0; i < 100; i++) {
+  const w = c.wbGet(i), t = js.wbGet(i), o = old.cells[i];
+  if (w !== t || w !== o) console.log(`${name(i)} (idx ${i}): wasm=${w} twin=${t} oldGolden=${o} ${w === o ? '' : 'WASM-CHANGED'} ${t === o ? '' : 'TWIN-CHANGED'}`);
+}
+c.benchBuild(100000); c.wbRecalc();
+console.log('mixed new:', c.benchRecalc(1).toExponential(15), 'old:', old.checksums[0]);

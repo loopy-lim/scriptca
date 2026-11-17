@@ -122,7 +122,7 @@ add(20, 22); // 42`,
     sub: 'This site’s src/core.ts compiled to WASM, running in your browser.',
     badge: 'browser WASM',
     sourceTitle: 'src/core.ts',
-    importNote: "import { mandelbrotRgba, boxBlurRgba, sumRange } from '../core'",
+    importNote: "import { pipelineStats, fibTree } from '../core'",
     run: 'Run',
     running: 'measuring…',
     result: 'Result',
@@ -131,116 +131,58 @@ add(20, 22); // 42`,
     avgOf: 'avg',
     callsUnit: 'calls',
     tabs: {
-      mandelbrot: {
-        label: 'mandelbrot',
-        desc: 'A whole frame computed in a single call.',
-        abi: '(w, h, cx, cy, scale, iter) → RGBA',
-        code: `mandelbrotRgba(w, h, cx, cy, scale, maxIter)
-// up to maxIter z = z² + c iterations per pixel`,
-        size: 'size (128 / 256 / 512)',
-        iter: 'max iter (32–1024)',
-        presets: 'presets',
-        presetLabels: {
-          home: 'home',
-          seahorse: 'seahorse valley',
-          elephant: 'elephant valley',
-          spiral: 'triple spiral',
-        },
-        reset: 'reset',
-        zoomHint: 'Click the canvas to zoom 2× into that point.',
-      },
-      image: {
-        label: 'image',
-        desc: 'Pass an image buffer once and run a filter.',
-        abi: 'RGBA → blur / resize / sobel',
-        code: `grayscaleRgba(rgba)
-boxBlurRgba(rgba, w, h)
-resizeNearestRgba(rgba, w, h, w/2, h/2)
-sobelRgba(rgba, w, h)`,
-        size: 'size (128 / 256 / 512)',
-        filter: 'filter',
-        filterLabels: {
-          grayscale: 'grayscale',
-          blur: 'box blur',
-          resize: 'resize ½',
-          sobel: 'sobel',
-        },
-        before: 'input',
-        after: 'output',
+      calcium: {
+        label: 'calcium',
+        desc: 'Spreadsheet engine. Edit cells, then compare a 100k-cell recalc to the JS twin.',
+        abi: 'wbRecalc · dirty grid',
+        code: `const eng = await createClient()
+const js = createTwin()
+
+eng.wbSetFormula(idx, enc('=SUM(A1:A5)'))
+eng.wbRecalcDirty()
+eng.benchBuild(100_000)
+eng.benchRecalc(1)`,
+        sheetTitle: 'Sheet · 8×15',
+        fxLabel: 'formula',
+        gridLabel: 'calcium sheet',
+        fxHint: 'Enter · Esc · arrows · #ERR!',
+        functionsHint: 'SUM · AVERAGE · IF · LET · LAMBDA · …',
+        loadingEngine: 'loading engine…',
+        engineErrorTitle: 'Could not load the engine',
+        engineErrorBody: 'WASM init failed. Retry below.',
+        raceTitle: '100k-cell recalc',
+        raceRun: 'Measure',
+        stageBuilding: 'building books…',
+        stageFull: 'full recalc…',
+        stageIncr: 'incremental…',
+        fullLabel: 'full · benchRecalc(1)',
+        incrLabel: 'incremental · benchRecalcDirty(1)',
+        cells: '100,000 cells',
+        medianOf: 'median of 7',
+        parityOk: 'checksums match',
+        parityBad: 'checksum mismatch',
+        faster: 'faster',
+        raceNote: 'Numbers vary by browser.',
       },
       pipeline: {
         label: 'pipeline',
-        desc: 'A 3-pass pipeline allocating a fresh Float64Array per pass — no JS heap allocation or GC cost.',
-        abi: '(bytes) → f64 · 3 fresh buffers',
+        desc: 'Three-pass pipeline that allocates a fresh Float64Array each pass.',
+        abi: '(bytes) → f64 · 3 buffers',
         code: `const xs = new Float64Array(n)  // normalize
 const dx = new Float64Array(n)  // diff
 const sm = new Float64Array(n)  // smooth`,
         size: 'size (64–2048 KB)',
       },
-      coarse: {
-        label: 'sumRange',
-        desc: 'Same sum — N calls versus one call.',
-        abi: 'N×add vs 1×sumRange',
-        code: `// N calls
-let sum = 0;
-for (let i = 0; i < n; i++) sum = add(sum, i);
-
-// one call
-sumRange(n);`,
-        n: 'n (1k–500k)',
-        chattyLabel: 'WASM · N× add',
-        chattyHint: 'N×',
-        coarseLabel: 'WASM · sumRange',
-        coarseHint: '1×',
-        jsHint: 'JS',
-        perOp: 'per element',
-      },
       fib: {
         label: 'fib',
-        desc: 'V8 compiles the loop to near-native speed; recursion keeps its call cost, and WASM pulls ahead.',
+        desc: 'Loops match the JIT; recursion keeps call-frame cost, where wasm leads.',
         abi: '(f64) → f64 · fib vs fibTree',
-        code: `// loop — V8 compiles this to near-native speed
-export function fib(n: number): number
-
-// recursion — call frames dominate, WASM wins
+        code: `export function fib(n: number): number
 export function fibTree(n: number): number`,
-        modeLabel: 'implementation',
-        modeLabels: { iter: 'loop', tree: 'recursive' },
+        modeLabel: 'impl',
+        modeLabels: { iter: 'loop', tree: 'tree' },
         n: 'n (10–78)',
         nTree: 'n (24–34)',
-      },
-      bytes: {
-        label: 'sumBytes',
-        desc: 'Pass the whole buffer once and sum inside.',
-        abi: '(bytes) → f64',
-        code: `export function sumBytes(data: Uint8Array): number {
-  let sum = 0;
-  for (let i = 0; i < data.length; i++) sum += data[i];
-  return sum;
-}`,
-        size: 'buffer size',
-      },
-      add: {
-        label: 'add',
-        desc: 'Call overhead outweighs the math, so WASM looks slower.',
-        abi: '(f64, f64) → f64',
-        code: `export function add(a: number, b: number): number {
-  return a + b;
-}`,
-        a: 'a',
-        b: 'b',
-      },
-      repeat: {
-        label: 'repeat',
-        desc: 'Frequent short strings get expensive.',
-        abi: '(utf8, f64) → utf8',
-        code: `export function repeat(text: string, times: number): string {
-  const parts: string[] = [];
-  for (let i = 0; i < times; i++) parts.push(text);
-  return parts.join(' / ');
-}`,
-        text: 'text',
-        times: 'times (1–12)',
       },
     },
     errorTitle: 'Could not load the demo core',
@@ -248,6 +190,7 @@ export function fibTree(n: number): number`,
     retry: 'Retry',
     loading: 'Loading the demo',
   },
+
   hosts: {
     eyebrow: 'Hosts',
     title: 'Runs wherever your app runs',
@@ -293,7 +236,7 @@ export function fibTree(n: number): number`,
     ],
     calloutTitle: 'In short',
     calloutBody:
-      'V8 compiles even plain loops to near-native speed — WASM leads on call-heavy code (recursion, search) and allocation-heavy pipelines.',
+      'V8 and SpiderMonkey both compile plain loops to near-native speed, and speculative integer math removes even conversion costs — WASM leads clearly on call-heavy recursion and allocation-heavy pipelines.',
   },
   footer: {
     tagline: 'One TypeScript core, every runtime.',

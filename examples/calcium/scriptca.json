@@ -1,0 +1,218 @@
+{
+  "name": "calcium",
+  "entry": "src/core.ts",
+  "prefix": "ca_",
+  "outDir": ".scriptca",
+  "target": "wasm",
+  "exports": [
+    {
+      "name": "wbInit",
+      "params": [
+        "f64",
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "wbSetNumber",
+      "params": [
+        "f64",
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "wbSetNumbers",
+      "params": [
+        "f64",
+        "bytes"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "wbSetFormula",
+      "params": [
+        "f64",
+        "bytes"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "wbGet",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "wbRecalc",
+      "params": [],
+      "returns": "f64"
+    },
+    {
+      "name": "benchParse",
+      "params": [
+        "f64",
+        "bytes"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "benchBuild",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "benchRecalc",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "wbRecalcDirty",
+      "params": [],
+      "returns": "f64"
+    },
+    {
+      "name": "wbInvalidateAll",
+      "params": [],
+      "returns": "f64"
+    },
+    {
+      "name": "benchRecalcDirty",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "dbgRect",
+      "params": [
+        "f64",
+        "f64",
+        "f64",
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "dbgCountRange",
+      "params": [
+        "f64",
+        "f64",
+        "f64",
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "benchBuildVariant",
+      "params": [
+        "f64",
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeAccGlobal",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeAccArray",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeFrames",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeLoadDirect",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeLoadLocal",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeLoadCmp",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeMachineNode",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeScanFind",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeScanChecksum",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeChkA",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeChkB",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeChkC",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeChkD",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    },
+    {
+      "name": "probeChkE",
+      "params": [
+        "f64"
+      ],
+      "returns": "f64"
+    }
+  ]
+}

@@ -6,6 +6,15 @@
 
 const TARGET_SAMPLE_MS = 14;
 
+/**
+ * Firefox clamps performance.now() to 1ms (Chromium: 0.1ms) — a sample
+ * shorter than the clamp is quantized noise (a 0.7ms add-loop sample reads
+ * as 0 or 1ms, i.e. −100%/+43%). Timed regions repeat the batch until they
+ * clear the clamp; batch functions are pure over `count`, so repeating only
+ * adds work, it never changes what is measured.
+ */
+const MIN_SAMPLE_MS = 8;
+
 /** Rounds interleaving both sides — enough for a stable trimmed mean. */
 export const SAMPLE_ROUNDS = 5;
 
@@ -47,6 +56,20 @@ export type PairStats = {
   rounds: number;
 };
 
+/** One timed region: repeat the batch until it clears MIN_SAMPLE_MS. */
+function timedSample(
+  runBatch: (count: number) => number,
+  count: number,
+): { usPerCall: number; calls: number } {
+  const start = performance.now();
+  let calls = 0;
+  do {
+    benchSink.value += runBatch(count);
+    calls += count;
+  } while (performance.now() - start < MIN_SAMPLE_MS);
+  return { usPerCall: ((performance.now() - start) * 1000) / calls, calls };
+}
+
 export function measurePair(
   wasmBatch: (count: number) => number,
   jsBatch: (count: number) => number,
@@ -58,33 +81,33 @@ export function measurePair(
 
   const wasmSamples: number[] = [];
   const jsSamples: number[] = [];
+  let wasmCalls = 0;
+  let jsCalls = 0;
 
   // Interleave execution order (AB / BA) across rounds to cancel GC or thermal bias.
   for (let r = 0; r < rounds; r++) {
     if (r % 2 === 0) {
-      const t0 = performance.now();
-      benchSink.value += wasmBatch(wasmCount);
-      const t1 = performance.now();
-      benchSink.value += jsBatch(jsCount);
-      const t2 = performance.now();
-      wasmSamples.push(((t1 - t0) * 1000) / wasmCount);
-      jsSamples.push(((t2 - t1) * 1000) / jsCount);
+      const w = timedSample(wasmBatch, wasmCount);
+      const j = timedSample(jsBatch, jsCount);
+      wasmSamples.push(w.usPerCall);
+      wasmCalls += w.calls;
+      jsSamples.push(j.usPerCall);
+      jsCalls += j.calls;
     } else {
-      const t0 = performance.now();
-      benchSink.value += jsBatch(jsCount);
-      const t1 = performance.now();
-      benchSink.value += wasmBatch(wasmCount);
-      const t2 = performance.now();
-      jsSamples.push(((t1 - t0) * 1000) / jsCount);
-      wasmSamples.push(((t2 - t1) * 1000) / wasmCount);
+      const j = timedSample(jsBatch, jsCount);
+      const w = timedSample(wasmBatch, wasmCount);
+      jsSamples.push(j.usPerCall);
+      jsCalls += j.calls;
+      wasmSamples.push(w.usPerCall);
+      wasmCalls += w.calls;
     }
   }
 
   return {
     wasm: trimmedMean(wasmSamples),
     js: trimmedMean(jsSamples),
-    wasmCalls: wasmCount * rounds,
-    jsCalls: jsCount * rounds,
+    wasmCalls,
+    jsCalls,
     rounds,
   };
 }

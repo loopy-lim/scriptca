@@ -125,7 +125,7 @@ add(20, 22); // 42`,
     sub: '이 사이트의 src/core.ts를 WASM으로 컴파일해 브라우저에서 실행합니다.',
     badge: '브라우저 WASM',
     sourceTitle: 'src/core.ts',
-    importNote: "import { mandelbrotRgba, boxBlurRgba, sumRange } from '../core'",
+    importNote: "import { pipelineStats, fibTree } from '../core'",
     run: '실행',
     running: '측정 중…',
     result: '결과',
@@ -134,116 +134,58 @@ add(20, 22); // 42`,
     avgOf: '평균',
     callsUnit: '회',
     tabs: {
-      mandelbrot: {
-        label: 'mandelbrot',
-        desc: '프레임 전체를 한 번의 호출로 계산합니다.',
-        abi: '(w, h, cx, cy, scale, iter) → RGBA',
-        code: `mandelbrotRgba(w, h, cx, cy, scale, maxIter)
-// 픽셀당 최대 maxIter번의 z = z² + c 반복`,
-        size: '크기 (128 / 256 / 512)',
-        iter: '최대 반복 (32–1024)',
-        presets: '프리셋',
-        presetLabels: {
-          home: '기본',
-          seahorse: '해마 골짜기',
-          elephant: '코끼리 골짜기',
-          spiral: '삼중 나선',
-        },
-        reset: '처음으로',
-        zoomHint: '캔버스를 클릭하면 그 지점으로 2× 확대됩니다.',
-      },
-      image: {
-        label: 'image',
-        desc: '이미지 버퍼를 한 번에 넘겨 필터를 돌립니다.',
-        abi: 'RGBA → blur / resize / sobel',
-        code: `grayscaleRgba(rgba)
-boxBlurRgba(rgba, w, h)
-resizeNearestRgba(rgba, w, h, w/2, h/2)
-sobelRgba(rgba, w, h)`,
-        size: '크기 (128 / 256 / 512)',
-        filter: '필터',
-        filterLabels: {
-          grayscale: 'grayscale',
-          blur: 'box blur',
-          resize: 'resize ½',
-          sobel: 'sobel',
-        },
-        before: '입력',
-        after: '출력',
+      calcium: {
+        label: 'calcium',
+        desc: '스프레드시트 엔진. 셀을 편집하고 10만 셀 재계산을 JS 트윈과 비교합니다.',
+        abi: 'wbRecalc · dirty grid',
+        code: `const eng = await createClient()
+const js = createTwin()
+
+eng.wbSetFormula(idx, enc('=SUM(A1:A5)'))
+eng.wbRecalcDirty()
+eng.benchBuild(100_000)
+eng.benchRecalc(1)`,
+        sheetTitle: '시트 · 8×15',
+        fxLabel: '수식',
+        gridLabel: 'calcium 시트',
+        fxHint: 'Enter · Esc · 방향키 · #ERR!',
+        functionsHint: 'SUM · AVERAGE · IF · LET · LAMBDA · …',
+        loadingEngine: '엔진 로딩…',
+        engineErrorTitle: '엔진을 불러오지 못했습니다',
+        engineErrorBody: 'WASM 초기화에 실패했습니다. 다시 시도해 주세요.',
+        raceTitle: '10만 셀 재계산',
+        raceRun: '측정',
+        stageBuilding: '북 빌드 중…',
+        stageFull: '전체 재계산…',
+        stageIncr: '증분 재계산…',
+        fullLabel: '전체 · benchRecalc(1)',
+        incrLabel: '증분 · benchRecalcDirty(1)',
+        cells: '100,000셀',
+        medianOf: '7회 중앙값',
+        parityOk: '체크섬 일치',
+        parityBad: '체크섬 불일치',
+        faster: '더 빠름',
+        raceNote: '브라우저마다 수치가 다릅니다.',
       },
       pipeline: {
         label: 'pipeline',
-        desc: '패스마다 새 Float64Array를 만드는 3-패스 파이프라인 — JS의 힙 할당·GC 비용이 사라집니다.',
-        abi: '(bytes) → f64 · 3 fresh buffers',
+        desc: '패스마다 Float64Array를 새로 할당하는 3-패스 파이프라인.',
+        abi: '(bytes) → f64 · 3 buffers',
         code: `const xs = new Float64Array(n)  // normalize
 const dx = new Float64Array(n)  // diff
 const sm = new Float64Array(n)  // smooth`,
         size: '크기 (64–2048 KB)',
       },
-      coarse: {
-        label: 'sumRange',
-        desc: '같은 합산을 N번 호출과 한 번 호출로 비교합니다.',
-        abi: 'N×add vs 1×sumRange',
-        code: `// N번 호출
-let sum = 0;
-for (let i = 0; i < n; i++) sum = add(sum, i);
-
-// 한 번 호출
-sumRange(n);`,
-        n: 'n (1k–500k)',
-        chattyLabel: 'WASM · N× add',
-        chattyHint: 'N번',
-        coarseLabel: 'WASM · sumRange',
-        coarseHint: '1번',
-        jsHint: 'JS',
-        perOp: '원소당',
-      },
       fib: {
         label: 'fib',
-        desc: '반복문은 V8이 네이티브급으로 컴파일하지만, 재귀는 호출 비용이 남아 wasm이 앞섭니다.',
+        desc: '반복은 JIT과 대등하고, 재귀는 호출 프레임 비용에서 wasm이 앞섭니다.',
         abi: '(f64) → f64 · fib vs fibTree',
-        code: `// 반복 — V8도 네이티브급
-export function fib(n: number): number
-
-// 재귀 — 호출 프레임이 지배, wasm 승
+        code: `export function fib(n: number): number
 export function fibTree(n: number): number`,
         modeLabel: '구현',
         modeLabels: { iter: '반복', tree: '재귀' },
         n: 'n (10–78)',
         nTree: 'n (24–34)',
-      },
-      bytes: {
-        label: 'sumBytes',
-        desc: '버퍼를 한 번에 넘겨 합산합니다.',
-        abi: '(bytes) → f64',
-        code: `export function sumBytes(data: Uint8Array): number {
-  let sum = 0;
-  for (let i = 0; i < data.length; i++) sum += data[i];
-  return sum;
-}`,
-        size: '버퍼 크기',
-      },
-      add: {
-        label: 'add',
-        desc: '호출 오버헤드가 연산보다 커서 WASM이 느려 보입니다.',
-        abi: '(f64, f64) → f64',
-        code: `export function add(a: number, b: number): number {
-  return a + b;
-}`,
-        a: 'a',
-        b: 'b',
-      },
-      repeat: {
-        label: 'repeat',
-        desc: '짧은 문자열을 자주 부르면 느려집니다.',
-        abi: '(utf8, f64) → utf8',
-        code: `export function repeat(text: string, times: number): string {
-  const parts: string[] = [];
-  for (let i = 0; i < times; i++) parts.push(text);
-  return parts.join(' / ');
-}`,
-        text: '텍스트',
-        times: '반복 (1–12)',
       },
     },
     errorTitle: '데모 코어를 불러오지 못했습니다',
@@ -296,7 +238,7 @@ export function fibTree(n: number): number`,
     ],
     calloutTitle: '한 줄 요약',
     calloutBody:
-      '브라우저의 V8은 단순 루프도 네이티브급으로 컴파일합니다 — wasm이 앞서는 건 호출 많은 재귀·탐색과 할당 잦은 파이프라인입니다.',
+      'V8·SpiderMonkey 모두 단순 루프를 네이티브급으로 컴파일하고, 정수 연산은 추측 최적화로 변환 비용조차 없앱니다 — wasm이 확실히 앞서는 건 호출 많은 재귀와 할당 잦은 파이프라인입니다.',
   },
   footer: {
     tagline: '하나의 TypeScript 코어, 모든 런타임.',

@@ -1,0 +1,3 @@
+# Verbatim copies of examples/calcium/.scriptca/generated — rebuilt by
+# `bun run sync:calcium` (wired into dev/build/typecheck), never edited here.
+src/calcium/generated/

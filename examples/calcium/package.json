@@ -1,0 +1,22 @@
+{
+  "name": "@scriptca/example-calcium",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "scriptca build --target wasm",
+    "build:native": "scriptca build --target native",
+    "doctor": "scriptca doctor",
+    "bench": "bun bench.ts",
+    "bench:versus": "bun bench.versus.ts",
+    "host:pricing": "bun host-node-pricing.ts",
+    "test": "bun test.ts"
+  },
+  "devDependencies": {
+    "@scriptc/runtime-wasm32-wasi": "^0.4.12",
+    "@unikit-bridge/scriptca": "workspace:*",
+    "expr-eval": "^2.0.2",
+    "hyperformula": "^3.5.0",
+    "scriptc": "^0.4.12"
+  }
+}

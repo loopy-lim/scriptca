@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "build:core": "scriptca build --target wasm --hosts browser",
-    "dev": "bun run build:core && bun --bun vite",
-    "build": "bun run build:core && bun --bun vite build && node scripts/postbuild.mjs",
+    "sync:calcium": "node scripts/sync-calcium.mjs",
+    "dev": "bun run sync:calcium && bun run build:core && bun --bun vite",
+    "build": "bun run sync:calcium && bun run build:core && bun --bun vite build && node scripts/postbuild.mjs",
     "verify": "bun run build && bun scripts/assert-dist.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "bun run sync:calcium && tsc --noEmit"
   },
   "dependencies": {
     "@unikit-bridge/scriptca": "workspace:*",

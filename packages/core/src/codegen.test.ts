@@ -221,15 +221,16 @@ describe('batch surface', () => {
     assert.match(src, /addonFns\[e\[0\]\]\(\.\.\.\(e\.slice\(1\) as unknown\[\]\)\)/, 'direct-tier fallback dispatches addonFns');
   });
 
-  it('shared tier routes by composition — bun numeric batches keep the ffi loop', () => {
+  it('shared tier is one instance — every call and batch rides the loader', () => {
     const src = generateClients(CONFIG, ['node'], { profile: PROFILE }).files['node.ts']!;
-    assert.match(src, /const __MARSHALED = new Set<string>\(MARSHALED_EXPORTS\);/);
-    assert.match(src, /const needsCodec = entries\.some\(\(e\) => __MARSHALED\.has\(e\[0\]\)\);/);
-    // addon executive: always on Node, marshaled-only on Bun (ffi direct
-    // numeric singles ~16 ns/op beat any batch — measured 2026-10-25)
-    assert.match(src, /if \(typeof __execBatch === 'function' && \(!IS_BUN \|\| needsCodec\)\) \{/);
-    // everything else (numeric-on-Bun, hosts without the addon) rides the
-    // loader — which routes the shared library's own executive the same way
+    // no per-signature tiering: mixing the addon's marshaled calls with the
+    // shared library's scalars split engine state (examples/calcium, 2026-11-17)
+    assert.doesNotMatch(src, /tierMarshaledForBun/);
+    assert.doesNotMatch(src, /__MARSHALED/);
+    assert.doesNotMatch(src, /needsCodec/);
+    // the shared branch never loads the addon mid-tier — mod.batch routes the
+    // shared library's own executive (sequential fallback inside the loader)
+    assert.match(src, /const fns = mod\.fns;/);
     assert.match(src, /return mod\.batch\(entries\);/);
   });
 
@@ -243,11 +244,13 @@ describe('batch surface', () => {
     assert.match(workers, /mod\.call\(e\[0\]/);
   });
 
-  it('shared tier binds the executive from a nullable addon lookup', () => {
+  it('shared tier keeps the addon out — whole-instance tiering only', () => {
     const src = generateClients(CONFIG, ['node'], { profile: PROFILE }).files['node.ts']!;
-    assert.match(src, /const addonFns = IS_BUN && options\.addon !== false \? loadAddonSync\(\) : null;/);
-    assert.match(src, /const addonFns = IS_BUN && options\.addon !== false \? await loadAddon\(\) : null;/);
-    assert.match(src, /__execBatch = addonFns === null \? undefined :/);
+    // the addon may be loaded whole (Node-first branch, Bun's no-.so fallback)
+    // but must never be merged into the shared-library client per function
+    assert.match(src, /loadAddonSync\(\)/);
+    assert.doesNotMatch(src, /IS_BUN && options\.addon !== false \? loadAddonSync\(\) : null/);
+    assert.doesNotMatch(src, /IS_BUN && options\.addon !== false \? await loadAddon\(\) : null/);
   });
 
   it('wasm flavors batch sequentially — an in-boundary batch is upstream territory', () => {

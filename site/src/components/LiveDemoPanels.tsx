@@ -3,38 +3,28 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@unikit-bridge/ui';
 
 import { useI18n } from '../i18n';
-import { AddPanel } from '../demo/panels/AddPanel';
-import { BytesPanel } from '../demo/panels/BytesPanel';
-import { CoarsePanel } from '../demo/panels/CoarsePanel';
+import { CalciumPanel } from '../demo/panels/CalciumPanel';
 import { FibPanel } from '../demo/panels/FibPanel';
-import { ImagePanel } from '../demo/panels/ImagePanel';
-import { MandelbrotPanel } from '../demo/panels/MandelbrotPanel';
 import { PipelinePanel } from '../demo/panels/PipelinePanel';
-import { RepeatPanel } from '../demo/panels/RepeatPanel';
 import { DEMO_TABS, type DemoTabKey } from '../demo/types';
 import { highlightCode } from '../highlight';
 import { ScrollHint } from './ScrollHint';
 
 /**
  * The tabbed demo panels — the React.lazy chunk that pulls in the compiled
- * core. Compute-heavy kernels first, honest boundary-cost baselines last.
- * Panel implementations live in src/demo/.
+ * core. Calcium keeps its own wasm engine + JS twin behind dynamic imports
+ * inside the panel so only visitors who open that tab fetch them.
  */
 
 const PANELS: Record<DemoTabKey, () => React.JSX.Element> = {
-  mandelbrot: MandelbrotPanel,
-  image: ImagePanel,
+  calcium: CalciumPanel,
   pipeline: PipelinePanel,
-  coarse: CoarsePanel,
   fib: FibPanel,
-  bytes: BytesPanel,
-  add: AddPanel,
-  repeat: RepeatPanel,
 };
 
 export default function DemoPanels() {
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<DemoTabKey>('mandelbrot');
+  const [activeTab, setActiveTab] = useState<DemoTabKey>('calcium');
   const activeMeta = t.demo.tabs[activeTab];
 
   return (
