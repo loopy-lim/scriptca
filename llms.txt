@@ -1,0 +1,26 @@
+# scriptca
+
+> 하나의 TypeScript 코어를 네이티브 라이브러리(기본) 또는 WASM(브라우저 선택)으로 컴파일해 Bun·Node·Deno·Tauri·React Native·Lynx·Workers·Vite·Next.js용 타입 안전 클라이언트로 내주는 도구예요. 컴파일러는 Vercel scriptc, 발행물은 단일 패키지 `@unikit-bridge/scriptca`(0.1.1 — 아직 npm 미게시, 2026-11-16 기준).
+
+## 핵심 규칙
+
+- 기본 산출물은 **네이티브**(.so/.dylib/.dll)예요. WASM은 브라우저처럼 네이티브를 못 쓰는 곳에만 선택. 로드는 Bun bun:ffi(내장)·Node koffi(선택).
+- 제로 설정: name은 package.json, entry는 `src/core.ts` → `core.ts` → `src/index.ts` → `index.ts` 순, outDir `.scriptca`. 설정 파일은 재정의할 값만 담아요.
+- 앱 코드는 `@unikit-bridge/scriptca-client` 임포트 하나: export conditions가 환경별 플레이버를 골라요(고정 필요 시 `/node`·`/bun`·`/browser` 등 서브패스). 앱 코드가 `.scriptca/` 경로를 직접 참조하면 잘못된 거예요.
+- drop-in: 번들러 플러그인을 등록하면 기존 `./core` import가 그대로 생성 클라이언트로 스왑돼요(호출부 재작성 없음). 브라우저 drop-in은 top-level await를 쓰므로 빌드 타깃 **ES2022+** 필요. 엔트리가 함수 아닌 값·클래스·`default` export를 내면 가로채지 않고 이유를 알려요.
+- Turbopack·Rspack(Lynx)에는 resolve 훅이 없어 drop-in 불가 — `withScriptcaAsync()`로 빌드·링크만 하고 import는 scriptca-client. Deno·Cloudflare Workers는 플러그인 없이 conditions만으로 실행.
+
+## CLI·전제 조건
+
+- `scriptca init` · `build`(`--watch` 감시) · `diff --fail-on-breaking`(CI 계약 게이트) · `doctor`(링크·툴체인 복구).
+- Bun ≥ 1.2 + clang(또는 cc). zig 0.13.x는 wasm·android 타깃에만 필요하고 없으면 첫 빌드가 캐시에 자동 설치해요. 코드젠 CLI는 Bun에서 실행되지만 생성물 런타임에는 Bun이 필요 없어요.
+
+## 주의 (트랩)
+
+- ⚠️ Android 앱 gradle에 `externalNativeBuild` 블록 추가 금지 — RN 0.88 gradle 플러그인 충돌로 기동 크래시(실측 원인). Expo는 `/expo` config plugin이 prebuild 때 네이티브 연결을 전부 처리해요.
+- `client.batch()`는 수치형 표면은 이기고(−13%) 문자열 표면은 늘어날 수 있어요(+8–16%) — BENCHMARK.md §9.
+- 단계별 기대 출력은 docs/getting-started.md, 실제 에러·해결은 docs/troubleshooting.md에 있어요.
+
+## MCP 서버 (AI 에이전트 연동)
+
+- `get_docs({"product":"scriptca"})`가 이 문서 전문을 돌려줘요. 연결: `claude mcp add unikit-bridge -- npx -y @unikit-bridge/mcp`.
