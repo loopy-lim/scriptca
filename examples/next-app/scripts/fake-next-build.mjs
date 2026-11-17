@@ -54,6 +54,6 @@ const turboCfg = await withScriptcaAsync({ reactStrictMode: true }, { cwd: root 
 if (turboCfg.turbopack?.resolveAlias) {
   throw new Error('turbopack.resolveAlias must not be set (absolute-path keys are inert): ' + JSON.stringify(turboCfg.turbopack));
 }
-if (!turboCfg.transpilePackages?.includes('@scriptca/client')) throw new Error('missing transpilePackages');
+if (!turboCfg.transpilePackages?.includes('@unikit-bridge/scriptca-client')) throw new Error('missing transpilePackages');
 
 console.log('next build wiring OK', gen);
