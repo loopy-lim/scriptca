@@ -11,8 +11,8 @@
     "contract:check": "scriptca diff"
   },
   "devDependencies": {
-    "scriptc": "^0.4.12",
-    "@scriptc/runtime-wasm32-wasi": "^0.4.12",
+    "scriptc": "^0.4.16",
+    "@scriptc/runtime-wasm32-wasi": "^0.4.16",
     "@unikit-bridge/scriptca": "workspace:*"
   }
 }

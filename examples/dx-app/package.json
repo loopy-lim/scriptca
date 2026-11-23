@@ -7,7 +7,7 @@
     "build": "scriptca build"
   },
   "devDependencies": {
-    "scriptc": "^0.4.12",
+    "scriptc": "^0.4.16",
     "@unikit-bridge/scriptca": "workspace:*"
   }
 }

@@ -8,9 +8,9 @@
     "test": "bun run build:core && bun scripts/smoke.mjs"
   },
   "devDependencies": {
-    "scriptc": "^0.4.12",
-    "@scriptc/runtime-wasm32-wasi": "^0.4.12",
-    "wrangler": "^4.151.3",
+    "scriptc": "^0.4.16",
+    "@scriptc/runtime-wasm32-wasi": "^0.4.16",
+    "wrangler": "^4.166.0",
     "@unikit-bridge/scriptca": "workspace:*"
   }
 }

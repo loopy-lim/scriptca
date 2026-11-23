@@ -16,9 +16,9 @@
     "@unikit-bridge/scriptca": "workspace:*"
   },
   "devDependencies": {
-    "scriptc": "^0.4.12",
-    "@scriptc/runtime-wasm32-wasi": "^0.4.12",
-    "vite": "^6.0.0",
+    "scriptc": "^0.4.16",
+    "@scriptc/runtime-wasm32-wasi": "^0.4.16",
+    "vite": "^8.0.0",
     "@unikit-bridge/scriptca": "workspace:*"
   }
 }

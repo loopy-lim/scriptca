@@ -36,6 +36,6 @@
     "bun": ">=1.2.0"
   },
   "dependencies": {
-    "@babel/runtime": "^8.0.0"
+    "@babel/runtime": "^8.1.3"
   }
 }

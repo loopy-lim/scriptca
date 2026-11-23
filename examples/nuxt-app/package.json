@@ -12,8 +12,8 @@
     "@unikit-bridge/scriptca": "workspace:*"
   },
   "devDependencies": {
-    "nuxt": "^4.6.2",
-    "vue": "^3.5.0",
+    "nuxt": "^4.6.4",
+    "vue": "^3.5.46",
     "@unikit-bridge/scriptca": "workspace:*"
   }
 }

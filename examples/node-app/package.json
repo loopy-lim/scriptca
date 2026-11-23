@@ -9,7 +9,7 @@
     "test": "bun run build:core && bun test src/"
   },
   "dependencies": {
-    "koffi": "^3.3.3",
+    "koffi": "^3.3.8",
     "@unikit-bridge/scriptca": "workspace:*"
   }
 }

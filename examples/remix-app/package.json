@@ -9,15 +9,15 @@
     "test": "bun run build && bun scripts/assert-output.mjs"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "react-router": "^8.5.0",
-    "isbot": "^5",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router": "^8.5.2",
+    "isbot": "^5.2.3",
     "@unikit-bridge/scriptca": "workspace:*"
   },
   "devDependencies": {
-    "@react-router/dev": "^8.5.0",
-    "vite": "^7.0.0",
+    "@react-router/dev": "^8.5.2",
+    "vite": "^8.0.0",
     "@unikit-bridge/scriptca": "workspace:*"
   }
 }
