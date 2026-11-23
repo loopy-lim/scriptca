@@ -56,7 +56,7 @@ jobs:
         run: |
           set -euo pipefail
           DUP=$(gh issue list -R "$GITHUB_REPOSITORY" --state open --label scriptc-update \
-                --json title --jq --arg t "$LATEST" '[.[] | select(.title | contains($t))] | length')
+                --json title --jq '.[].title' | grep -cF "$LATEST" || true)
           if [ "$DUP" != "0" ]; then
             echo "created=false" >> "$GITHUB_OUTPUT"
             echo "동일 버전 열린 이슈 존재 — 스킵"
