@@ -96,7 +96,7 @@ export async function resolveScriptc(cwd = process.cwd()): Promise<string> {
 
   // The verified floor — keep in lockstep with the scriptc devDependency pin
   // in the root package.json.
-  const install = await run('bun', ['add', '--dev', 'scriptc@^0.4.12'], { cwd });
+  const install = await run('bun', ['add', '--dev', 'scriptc@^0.4.16'], { cwd });
   if (install.code !== 0) {
     throw new ScriptcaToolchainError(
       'scriptc is not installed and auto-install failed.',

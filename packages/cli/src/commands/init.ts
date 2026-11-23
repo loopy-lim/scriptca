@@ -88,7 +88,7 @@ export default defineConfig({
   const deps: Record<string, string> = {
     // The verified scriptc floor — keep in lockstep with the toolchain pins
     // in @scriptca/core (auto-install) and this repo's root package.json.
-    scriptc: '^0.4.12',
+    scriptc: '^0.4.16',
     // Single published package — every host adapter is a subpath
     // (@unikit-bridge/scriptca/node, /vite, /next, …).
     '@unikit-bridge/scriptca': '^0.1.0',
@@ -123,7 +123,7 @@ client.dispose();
 `,
     );
   } else if (host === 'vite') {
-    deps['@scriptc/runtime-wasm32-wasi'] = '^0.4.12';
+    deps['@scriptc/runtime-wasm32-wasi'] = '^0.4.16';
     scripts.dev = 'scriptca build --target both && vite';
     scripts['build:web'] = 'scriptca build --target both && vite build';
     await writeFile(
