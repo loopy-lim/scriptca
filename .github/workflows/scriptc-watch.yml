@@ -1,0 +1,84 @@
+name: scriptc watch
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # 매일 09:00 KST
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "버전이 같아도 이슈 생성 절차를 강제로 진행 (테스트용)"
+        required: false
+        default: "false"
+
+permissions:
+  issues: write
+  contents: read
+
+concurrency:
+  group: scriptc-watch
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: npm 최신 버전 확인
+        id: ver
+        env:
+          FORCE: ${{ inputs.force }}
+        run: |
+          set -euo pipefail
+          CURRENT=$(node -p "require('./package.json').devDependencies.scriptc.replace(/^\^/,'')")
+          LATEST=$(npm view scriptc version)
+          RUNTIME=$(npm view @scriptc/runtime-wasm32-wasi version)
+          {
+            echo "current=$CURRENT"
+            echo "latest=$LATEST"
+            echo "runtime=$RUNTIME"
+          } >> "$GITHUB_OUTPUT"
+          echo "current=$CURRENT latest=$LATEST runtime=$RUNTIME"
+          if [ "$CURRENT" != "$LATEST" ] || [ "$FORCE" = "true" ]; then
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 업데이트 이슈 생성
+        id: issue
+        if: steps.ver.outputs.needed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          LATEST: ${{ steps.ver.outputs.latest }}
+          CURRENT: ${{ steps.ver.outputs.current }}
+          RUNTIME: ${{ steps.ver.outputs.runtime }}
+        run: |
+          set -euo pipefail
+          DUP=$(gh issue list -R "$GITHUB_REPOSITORY" --state open --label scriptc-update \
+                --json title --jq --arg t "$LATEST" '[.[] | select(.title | contains($t))] | length')
+          if [ "$DUP" != "0" ]; then
+            echo "created=false" >> "$GITHUB_OUTPUT"
+            echo "동일 버전 열린 이슈 존재 — 스킵"
+            exit 0
+          fi
+          gh label create scriptc-update --color 0E8A16 --description "scriptc upstream update" 2>/dev/null || true
+          BODY=$(printf 'scriptc **%s** 가 릴리즈되었습니다 (현재 `%s`).\n\n- bump: `devDependencies.scriptc` → `^%s`, `devDependencies["@scriptc/runtime-wasm32-wasi"]` → `^%s`\n- 릴리즈 노트: https://github.com/vercel-labs/scriptc/releases\n\nT3 자동화: 이 이슈를 작업해 PR 을 만들고 CI 녹색 시 병합한다. 작업 시작 시 이 이슈에 PR 링크를 코멘트할 것.\n' "$LATEST" "$CURRENT" "$LATEST" "$RUNTIME")
+          URL=$(gh issue create -R "$GITHUB_REPOSITORY" --label scriptc-update \
+            --title "scriptc $LATEST released (current $CURRENT)" \
+            --body "$BODY")
+          echo "created=true" >> "$GITHUB_OUTPUT"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: T3 webhook ping
+        if: steps.issue.outputs.created == 'true'
+        env:
+          T3_WEBHOOK: ${{ secrets.T3_SCRIPTC_WEBHOOK }}
+        run: |
+          if [ -z "$T3_WEBHOOK" ]; then
+            echo "T3_SCRIPTC_WEBHOOK 시크릿 없음 — T3 정기 점검(12h)이 처리합니다"
+            exit 0
+          fi
+          curl -fsS -m 20 -X POST "$T3_WEBHOOK" -H 'content-type: application/json' \
+            -d '{"source":"scriptc-watch","repo":"loopy-lim/scriptca"}' \
+            || echo "T3 미응답 (오프라인일 수 있음) — 정기 점검이 처리합니다"
